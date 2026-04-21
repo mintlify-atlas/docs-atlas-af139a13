@@ -1,0 +1,181 @@
+---
+title: "SlideMenu view modifiers: width, background, and animation"
+description: "Reference for all seven SlideMenu modifiers: panel width, background style, overlay color and opacity, border stroke color and width, and open/close animation."
+---
+
+SlideMenu exposes its full appearance and behavior configuration through SwiftUI view modifiers. Apply these modifiers to a `SlideMenu` instance or any ancestor view — they propagate down through the SwiftUI environment, so a single modifier on a parent view configures all `SlideMenu` instances in the subtree.
+
+## Modifiers
+
+<AccordionGroup>
+  <Accordion title=".slideMenuWidth(_:)">
+    Sets the width of the `SlideMenu` panel in points.
+
+    ```swift
+    func slideMenuWidth(_ width: CGFloat) -> some View
+    ```
+
+    <ParamField path="width" type="CGFloat" default="290">
+      The width of the menu panel in points.
+    </ParamField>
+
+    ```swift
+    SlideMenu {
+        ContentView()
+    } menu: {
+        MenuView()
+    }
+    .slideMenuWidth(320)
+    ```
+  </Accordion>
+
+  <Accordion title=".slideMenuBackground(_:)">
+    Sets the background style applied to both the menu panel and the main content panel.
+
+    Accepts any `ShapeStyle` — solid colors, materials, or gradients.
+
+    ```swift
+    func slideMenuBackground(_ style: some ShapeStyle) -> some View
+    ```
+
+    <ParamField path="style" type="some ShapeStyle" default=".background">
+      Any `ShapeStyle` value — for example a solid `Color`, a `Material`, or a custom gradient. The system `.background` material is used when this modifier is not applied.
+    </ParamField>
+
+    ```swift
+    // Use a material
+    .slideMenuBackground(.ultraThinMaterial)
+
+    // Use a solid color
+    .slideMenuBackground(Color(.systemBackground))
+
+    // Use a gradient
+    .slideMenuBackground(
+        LinearGradient(colors: [.blue, .purple], startPoint: .top, endPoint: .bottom)
+    )
+    ```
+  </Accordion>
+
+  <Accordion title=".slideMenuOverlayColor(_:)">
+    Overrides the color of the dimming overlay shown on top of the main content while the menu is open.
+
+    By default the overlay color resolves automatically based on the current color scheme — black in dark mode, white in light mode. Use this modifier to force a specific color regardless of color scheme.
+
+    ```swift
+    func slideMenuOverlayColor(_ color: Color) -> some View
+    ```
+
+    <ParamField path="color" type="Color" default="auto (black in dark mode, white in light mode)">
+      The tint color for the dimming overlay. When not applied, the color is resolved automatically from the current `colorScheme`.
+    </ParamField>
+
+    ```swift
+    .slideMenuOverlayColor(.black)
+    ```
+  </Accordion>
+
+  <Accordion title=".slideMenuOverlayOpacity(_:)">
+    Sets the maximum opacity the dimming overlay reaches when the menu is fully open.
+
+    ```swift
+    func slideMenuOverlayOpacity(_ opacity: CGFloat) -> some View
+    ```
+
+    <ParamField path="opacity" type="CGFloat" default="0.6">
+      A value between `0` (fully transparent) and `1` (fully opaque). At `0` the overlay is invisible; at `1` it completely obscures the main content.
+    </ParamField>
+
+    ```swift
+    .slideMenuOverlayOpacity(0.4)
+    ```
+  </Accordion>
+
+  <Accordion title=".slideMenuBorderColor(_:)">
+    Sets the color of the border stroke drawn around the main content while the menu is open or being dragged.
+
+    ```swift
+    func slideMenuBorderColor(_ color: Color) -> some View
+    ```
+
+    <ParamField path="color" type="Color" default=".primary">
+      The stroke color for the border drawn around the main content panel.
+    </ParamField>
+
+    ```swift
+    .slideMenuBorderColor(.gray)
+    ```
+  </Accordion>
+
+  <Accordion title=".slideMenuBorderWidth(_:)">
+    Sets the line width of the border stroke drawn around the main content while the menu is visible.
+
+    Set this to `0` to remove the border entirely.
+
+    ```swift
+    func slideMenuBorderWidth(_ width: CGFloat) -> some View
+    ```
+
+    <ParamField path="width" type="CGFloat" default="1">
+      The stroke width in points. Use `0` to disable the border.
+    </ParamField>
+
+    ```swift
+    // Subtle border
+    .slideMenuBorderWidth(0.5)
+
+    // No border
+    .slideMenuBorderWidth(0)
+    ```
+  </Accordion>
+
+  <Accordion title=".slideMenuAnimation(_:)">
+    Sets the animation used when `SlideMenu` opens or closes.
+
+    ```swift
+    func slideMenuAnimation(_ animation: Animation) -> some View
+    ```
+
+    <ParamField path="animation" type="Animation" default=".spring(response: 0.35, dampingFraction: 0.85)">
+      The `Animation` applied to the open and close transitions. Any SwiftUI `Animation` value is accepted.
+    </ParamField>
+
+    ```swift
+    // Default spring
+    .slideMenuAnimation(.spring(response: 0.35, dampingFraction: 0.85))
+
+    // Bouncier spring
+    .slideMenuAnimation(.bouncy(duration: 0.5, extraBounce: 0.15))
+
+    // Simple ease
+    .slideMenuAnimation(.easeInOut(duration: 0.3))
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Combining modifiers
+
+All modifiers can be chained together on a single `SlideMenu`. The example below uses every modifier available to produce a heavily customized menu:
+
+```swift
+SlideMenu(direction: .left, edgeZoneWidth: 40) {
+    NavigationStack {
+        ContentView()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    SlideMenuButton(systemImage: "sidebar.leading")
+                }
+            }
+    }
+} menu: {
+    MenuView()
+}
+.slideMenuWidth(300)
+.slideMenuBackground(.ultraThinMaterial)
+.slideMenuOverlayOpacity(0.5)
+.slideMenuBorderWidth(0)
+.slideMenuAnimation(.bouncy(duration: 0.5, extraBounce: 0.15))
+```
+
+<Tip>
+  Modifiers applied to a parent view cascade to all `SlideMenu` instances in its subtree, so you can set global defaults at the root of your view hierarchy and override them locally where needed.
+</Tip>

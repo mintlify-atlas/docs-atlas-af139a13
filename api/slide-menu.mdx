@@ -1,0 +1,132 @@
+---
+title: "SlideMenu component: parameters and environment API"
+description: "Reference for the SlideMenu container view. Covers direction, edgeZoneWidth, main, and menu parameters, environment modifiers, and slideMenuToggle injection."
+---
+
+`SlideMenu` is the root container for the library. It wraps your primary content and a hidden menu panel, then manages all gesture recognition, animation, and overlay rendering internally. You configure its appearance by applying view modifiers — no subclassing or delegates required.
+
+## Signature
+
+```swift
+public struct SlideMenu<Main: View, Menu: View>: View
+```
+
+## Initializer
+
+```swift
+public init(
+    direction: SlideMenuDirection = .left,
+    edgeZoneWidth: CGFloat = 30,
+    @ViewBuilder main: () -> Main,
+    @ViewBuilder menu: () -> Menu
+)
+```
+
+## Parameters
+
+<ParamField path="direction" type="SlideMenuDirection" default=".left">
+  The edge from which the menu slides into view. Pass `.left` to reveal the menu from the leading edge, or `.right` to reveal it from the trailing edge. See [`SlideMenuDirection`](/api/slide-menu-direction) for the full set of cases.
+</ParamField>
+
+<ParamField path="edgeZoneWidth" type="CGFloat" default="30">
+  The width in points of the invisible touch zone along the screen edge that recognizes a swipe-to-open gesture. Gestures that start outside this zone are ignored when the menu is closed, preventing conflicts with horizontal controls like sliders or scroll views. Increase this value if users have trouble opening the menu by swiping; decrease it to reduce interference with other interactive elements.
+</ParamField>
+
+<ParamField path="main" type="() -> Main" required>
+  A `@ViewBuilder` closure that produces the primary content of your screen — typically a `NavigationStack` or another top-level container. The `slideMenuToggle` action is automatically injected into this view's environment, so any [`SlideMenuButton`](/api/slide-menu-button) placed inside it works without additional wiring.
+</ParamField>
+
+<ParamField path="menu" type="() -> Menu" required>
+  A `@ViewBuilder` closure that produces the menu panel content revealed behind the main surface. This closure also receives the `slideMenuToggle` environment value, so menu items can close the panel after navigation.
+</ParamField>
+
+## Environment values
+
+`SlideMenu` injects `slideMenuToggle` — a `@MainActor @Sendable () -> Void` closure — into both the `main` and `menu` content trees. Any descendant can read it directly:
+
+```swift
+@Environment(\.slideMenuToggle) private var toggle
+```
+
+This design means [`SlideMenuButton`](/api/slide-menu-button) and custom menu row buttons all work without passing bindings through the view hierarchy.
+
+## View modifiers
+
+All appearance settings are applied as modifiers on the `SlideMenu` instance or any ancestor view.
+
+| Modifier | Type | Default | Description |
+|---|---|---|---|
+| `.slideMenuWidth(_:)` | `CGFloat` | `290` | Width of the menu panel in points |
+| `.slideMenuBackground(_:)` | `ShapeStyle` | `.background` | Background style for both panels |
+| `.slideMenuOverlayColor(_:)` | `Color` | auto | Dimming overlay color; defaults to black in dark mode, white in light mode |
+| `.slideMenuOverlayOpacity(_:)` | `CGFloat` | `0.6` | Maximum opacity of the dimming overlay when fully open |
+| `.slideMenuBorderColor(_:)` | `Color` | `.primary` | Color of the stroke drawn around main content while the menu is open |
+| `.slideMenuBorderWidth(_:)` | `CGFloat` | `1` | Line width of the border stroke |
+| `.slideMenuAnimation(_:)` | `Animation` | `.spring(response: 0.35, dampingFraction: 0.85)` | Animation used when opening and closing |
+
+## Usage
+
+### Basic usage
+
+```swift
+SlideMenu {
+    Text("Main Content")
+} menu: {
+    VStack(alignment: .leading, spacing: 16) {
+        Text("Home")
+        Text("Settings")
+    }
+    .padding()
+}
+```
+
+### With a toolbar toggle button
+
+```swift
+SlideMenu(direction: .left) {
+    NavigationStack {
+        Text("Main Content")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    SlideMenuButton(systemImage: "sidebar.leading")
+                }
+            }
+    }
+} menu: {
+    VStack {
+        Text("Menu Item 1")
+        Text("Menu Item 2")
+    }
+}
+.slideMenuWidth(300)
+.slideMenuBackground(.ultraThinMaterial)
+.slideMenuAnimation(.bouncy(duration: 0.5, extraBounce: 0.15))
+```
+
+### Reading the toggle action in menu content
+
+Both the `main` and `menu` closures receive `slideMenuToggle`, so menu rows can close the panel after selecting a destination:
+
+```swift
+struct MenuList: View {
+    @Binding var selection: Page
+    @Environment(\.slideMenuToggle) private var toggle
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            ForEach(Page.allCases) { page in
+                Button(page.rawValue.capitalized) {
+                    selection = page
+                    toggle()
+                }
+            }
+        }
+        .padding(.leading, 24)
+        .padding(.top, 80)
+    }
+}
+```
+
+<Note>
+  Place `SlideMenu` at the root of your view hierarchy — wrapping a full-screen `NavigationStack` — so its drag gesture and overlay span the entire screen.
+</Note>

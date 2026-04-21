@@ -1,97 +1,57 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "SlideMenu: gesture-driven SwiftUI side menu library"
+description: "SlideMenu adds a gesture-driven side menu to any SwiftUI app. Zero dependencies, iOS 15+, customizable via environment modifiers and Swift Package Manager."
 ---
 
-## Setting up
+SlideMenu brings a native-feeling slide-out side menu to SwiftUI with edge-swipe gestures, tap-to-dismiss, and complete visual customization — all through standard SwiftUI environment modifiers. Add it to any app in minutes using Swift Package Manager.
 
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Installation" icon="box" href="/installation">
+    Add SlideMenu to your Xcode project via Swift Package Manager in under a minute.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Build your first slide menu in a few lines of SwiftUI code.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Customization guide" icon="paintbrush" href="/guides/customization">
+    Tweak width, background, overlays, borders, and animations with view modifiers.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="API reference" icon="code" href="/api/slide-menu">
+    Full reference for SlideMenu, SlideMenuButton, and all view modifiers.
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## How it works
 
-Everything you need to create world-class documentation.
+SlideMenu wraps your main content and menu content in a single container. The main view slides aside to reveal the menu beneath, driven by an edge-swipe gesture or a `SlideMenuButton` placed anywhere in your view hierarchy. All appearance settings are passed through the SwiftUI environment, so you can apply modifiers at any level.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+<Steps>
+  <Step title="Add the package">
+    Add the SlideMenu Swift package to your Xcode project from `https://github.com/matteozappia/SlideMenu.git`.
+  </Step>
+  <Step title="Wrap your root view">
+    Replace your root view with `SlideMenu`, providing your main content and menu content as trailing closures.
+  </Step>
+  <Step title="Add a toggle button">
+    Drop a `SlideMenuButton` anywhere inside your main content — it picks up the toggle action from the environment automatically.
+  </Step>
+  <Step title="Customize appearance">
+    Apply `.slideMenuWidth()`, `.slideMenuBackground()`, `.slideMenuAnimation()`, and other modifiers to tailor the look and feel.
+  </Step>
+</Steps>
 
-## Need inspiration?
+## Key features
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Gesture-driven" icon="hand-pointer">
+    Edge-swipe gesture with axis locking works seamlessly alongside `ScrollView`, `List`, and `Form`.
+  </Card>
+  <Card title="Left and right" icon="arrows-left-right">
+    Slide in from the leading or trailing edge — configurable with a single parameter.
+  </Card>
+  <Card title="Environment-based API" icon="leaf">
+    All appearance settings flow through the SwiftUI environment. No callback spaghetti.
+  </Card>
+  <Card title="Zero dependencies" icon="circle-check">
+    Pure SwiftUI — no third-party packages, no Objective-C bridging, no UIKit subclassing.
+  </Card>
+</CardGroup>

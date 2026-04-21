@@ -1,0 +1,85 @@
+---
+title: "SlideMenuDirection: choose the leading or trailing edge"
+description: "Reference for SlideMenuDirection. Pass .left or .right to the direction parameter to set which screen edge the menu slides from. Includes LTR and RTL guidance."
+---
+
+`SlideMenuDirection` controls which edge of the screen the [`SlideMenu`](/api/slide-menu) uses as the origin of its panel. Pass it to the `direction` parameter of `SlideMenu` to pin the menu to the leading or trailing side of the display. The default is `.left`.
+
+## Signature
+
+```swift
+public enum SlideMenuDirection: Hashable
+```
+
+## Cases
+
+<ResponseField name="left" type="SlideMenuDirection">
+  The menu slides in from the **left** edge of the screen. In a left-to-right (LTR) layout — the default for English, French, German, and most other languages — this is the **leading** edge. The main content shifts to the right as the menu opens, and a swipe from the left edge triggers the gesture.
+</ResponseField>
+
+<ResponseField name="right" type="SlideMenuDirection">
+  The menu slides in from the **right** edge of the screen. In a left-to-right (LTR) layout this is the **trailing** edge, and in a right-to-left (RTL) layout — such as Arabic or Hebrew — this is the **leading** edge. The main content shifts to the left as the menu opens, and a swipe from the right edge triggers the gesture.
+</ResponseField>
+
+## LTR and RTL layouts
+
+`SlideMenuDirection` uses absolute screen positions (left/right), not semantic layout directions (leading/trailing). The table below shows how each case maps in each writing direction:
+
+| Case | LTR layout | RTL layout |
+|---|---|---|
+| `.left` | Leading edge | Trailing edge |
+| `.right` | Trailing edge | Leading edge |
+
+If you want the menu to always appear on the **leading** side regardless of locale, choose `.left` for LTR apps and `.right` for RTL apps. If you have a single locale or explicit left-hand / right-hand UX intent, pick the case that matches the physical side you want.
+
+## Usage
+
+```swift
+// Default — menu slides from the left
+SlideMenu {
+    Text("Main")
+} menu: {
+    Text("Left Menu")
+}
+
+// Menu slides from the right
+SlideMenu(direction: .right) {
+    Text("Main")
+} menu: {
+    Text("Right Menu")
+}
+```
+
+<CodeGroup>
+
+```swift Left (default)
+SlideMenu(direction: .left) {
+    NavigationStack {
+        ContentView()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    SlideMenuButton(systemImage: "sidebar.leading")
+                }
+            }
+    }
+} menu: {
+    MenuView()
+}
+```
+
+```swift Right
+SlideMenu(direction: .right) {
+    NavigationStack {
+        ContentView()
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    SlideMenuButton(systemImage: "sidebar.trailing")
+                }
+            }
+    }
+} menu: {
+    MenuView()
+}
+```
+
+</CodeGroup>

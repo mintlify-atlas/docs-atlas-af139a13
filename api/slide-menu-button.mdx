@@ -1,0 +1,116 @@
+---
+title: "SlideMenuButton: toggle the menu from any descendant"
+description: "Reference for SlideMenuButton. Reads slideMenuToggle from the environment — no bindings needed. Provides an SF Symbol shorthand and a custom ViewBuilder label."
+---
+
+`SlideMenuButton` is a purpose-built button that triggers the nearest enclosing [`SlideMenu`](/api/slide-menu). It reads the `slideMenuToggle` action directly from the environment — meaning you can drop it anywhere inside the `main` content closure without passing closures, bindings, or observable objects through the view hierarchy.
+
+## Signature
+
+```swift
+public struct SlideMenuButton<Label: View>: View
+```
+
+## Initializers
+
+`SlideMenuButton` has two initializers depending on whether you want a system symbol or a fully custom label view.
+
+### Custom label
+
+```swift
+public init(@ViewBuilder label: () -> Label)
+```
+
+<ParamField path="label" type="() -> Label" required>
+  A `@ViewBuilder` closure that produces the button's visual content. Use any SwiftUI view — a `Label`, `Image`, `HStack`, or anything else — as the visible face of the button.
+</ParamField>
+
+### SF Symbol shorthand
+
+```swift
+public init(systemImage: String)
+// Available when Label == Image
+```
+
+<ParamField path="systemImage" type="String" required>
+  The name of an SF Symbols system image (for example, `"sidebar.leading"` or `"line.3.horizontal"`). This initializer is only available when `Label` is `Image`, and it creates the `Image` internally using `Image(systemName:)`.
+</ParamField>
+
+## How it works
+
+`SlideMenuButton` holds a single `@Environment(\.slideMenuToggle)` property. When tapped, it calls that closure, which toggles the open/closed state of the enclosing `SlideMenu` with the configured animation.
+
+```swift
+@Environment(\.slideMenuToggle) private var toggle
+
+public var body: some View {
+    Button(action: toggle) { label }
+}
+```
+
+Because the toggle action is injected by `SlideMenu` into its entire `main` content tree, any `SlideMenuButton` placed at any depth inside `main` picks it up automatically.
+
+<Warning>
+  `SlideMenuButton` must be placed inside the `main` content of a `SlideMenu`. Outside that context, `slideMenuToggle` resolves to a no-op default and the button will appear to do nothing.
+</Warning>
+
+## Usage
+
+### System image button
+
+The most common placement is a `ToolbarItem` inside a `NavigationStack`:
+
+```swift
+SlideMenu {
+    NavigationStack {
+        ContentView()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    SlideMenuButton(systemImage: "sidebar.leading")
+                }
+            }
+    }
+} menu: {
+    MenuView()
+}
+```
+
+### Custom label button
+
+Use the `@ViewBuilder` initializer when you need a custom appearance — for example, a labelled button in an empty-state screen:
+
+```swift
+SlideMenu {
+    VStack {
+        SlideMenuButton {
+            Label("Open Menu", systemImage: "line.3.horizontal")
+        }
+    }
+} menu: {
+    MenuView()
+}
+```
+
+<CodeGroup>
+
+```swift System image
+SlideMenuButton(systemImage: "sidebar.leading")
+```
+
+```swift Custom label
+SlideMenuButton {
+    Label("Menu", systemImage: "line.3.horizontal")
+}
+```
+
+```swift Custom view
+SlideMenuButton {
+    HStack(spacing: 6) {
+        Image(systemName: "line.3.horizontal")
+        Text("Menu")
+            .font(.subheadline.weight(.medium))
+    }
+}
+```
+
+</CodeGroup>

@@ -1,0 +1,169 @@
+---
+title: "Customization: styling your SlideMenu with view modifiers"
+description: "Configure SlideMenu panel width, background style, overlay color and opacity, border, and open/close animation using SwiftUI environment modifiers."
+keywords: ["SlideMenu", "SwiftUI", "customization", "modifiers", "animation", "background", "overlay", "border", "width"]
+---
+
+All appearance settings in SlideMenu are exposed as SwiftUI view modifiers that write into the environment. You can apply them directly to the `SlideMenu` view or to any ancestor — including a root view in your app's scene to establish defaults across multiple menus.
+
+## Menu width
+
+`.slideMenuWidth(_:)` sets the width of the slide-out panel in points.
+
+**Default:** `290`
+
+```swift
+.slideMenuWidth(320)
+```
+
+## Background
+
+`.slideMenuBackground(_:)` accepts any `ShapeStyle` — solid colors, system materials, and gradients all work. The style is applied to both the menu panel and the main content surface.
+
+**Default:** `.background` (the system background color)
+
+<AccordionGroup>
+  <Accordion title="Solid color">
+    ```swift
+    .slideMenuBackground(Color(.systemBackground))
+    ```
+  </Accordion>
+  <Accordion title="Material (blur)">
+    ```swift
+    .slideMenuBackground(.ultraThinMaterial)
+    ```
+  </Accordion>
+  <Accordion title="Gradient">
+    ```swift
+    .slideMenuBackground(
+        LinearGradient(
+            colors: [.blue, .purple],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    )
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Overlay
+
+While the menu is open, a dimming overlay is drawn on top of the main content. Two modifiers control it independently.
+
+**Defaults:** color resolves automatically (black in dark mode, white in light mode); opacity `0.6`
+
+<Tabs>
+  <Tab title="Overlay color">
+    Override the automatic color with a specific value. By default the overlay adapts to the current color scheme.
+
+    ```swift
+    .slideMenuOverlayColor(.black)
+    ```
+  </Tab>
+  <Tab title="Overlay opacity">
+    Set the maximum opacity the overlay reaches when the menu is fully open. Use a value between `0` (invisible) and `1` (fully opaque).
+
+    ```swift
+    .slideMenuOverlayOpacity(0.4)
+    ```
+  </Tab>
+  <Tab title="Combined">
+    ```swift
+    .slideMenuOverlayColor(.black)
+    .slideMenuOverlayOpacity(0.4)
+    ```
+  </Tab>
+</Tabs>
+
+## Border
+
+A thin stroke is drawn around the main content while the menu is open or being dragged. Two modifiers control the stroke appearance.
+
+**Defaults:** color `.primary`; width `1`
+
+<Tabs>
+  <Tab title="Border color">
+    ```swift
+    .slideMenuBorderColor(.gray)
+    ```
+  </Tab>
+  <Tab title="Border width">
+    Set to `0` to remove the border entirely.
+
+    ```swift
+    .slideMenuBorderWidth(0.5)
+    ```
+  </Tab>
+  <Tab title="Combined">
+    ```swift
+    .slideMenuBorderColor(.gray)
+    .slideMenuBorderWidth(0.5)
+    ```
+  </Tab>
+</Tabs>
+
+## Animation
+
+`.slideMenuAnimation(_:)` accepts any SwiftUI `Animation` value and controls both the open and close transitions.
+
+**Default:** `.spring(response: 0.35, dampingFraction: 0.85)`
+
+<AccordionGroup>
+  <Accordion title="Spring">
+    Tunable response and damping. Good for a natural, physics-based feel.
+
+    ```swift
+    .slideMenuAnimation(.spring(response: 0.35, dampingFraction: 0.85))
+    ```
+  </Accordion>
+  <Accordion title="Bouncy">
+    Adds overshoot for a playful, elastic feel. `extraBounce` controls how much the panel overshoots.
+
+    ```swift
+    .slideMenuAnimation(.bouncy(duration: 0.5, extraBounce: 0.15))
+    ```
+  </Accordion>
+  <Accordion title="Ease in/out">
+    A simple timed curve, useful when you want predictable, non-springy motion.
+
+    ```swift
+    .slideMenuAnimation(.easeInOut(duration: 0.3))
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Full combined example
+
+This example from the README combines multiple modifiers to produce a polished, production-ready configuration:
+
+```swift
+SlideMenu(direction: .left, edgeZoneWidth: 40) {
+    NavigationStack {
+        ContentView()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    SlideMenuButton(systemImage: "sidebar.leading")
+                }
+            }
+    }
+} menu: {
+    MenuView()
+}
+.slideMenuWidth(300)
+.slideMenuBackground(.ultraThinMaterial)
+.slideMenuOverlayOpacity(0.5)
+.slideMenuBorderWidth(0)
+.slideMenuAnimation(.bouncy(duration: 0.5, extraBounce: 0.15))
+```
+
+## Modifier defaults reference
+
+| Modifier | Default |
+|---|---|
+| `.slideMenuWidth` | `290` |
+| `.slideMenuBackground` | `.background` |
+| `.slideMenuOverlayColor` | Auto (dark mode: black, light mode: white) |
+| `.slideMenuOverlayOpacity` | `0.6` |
+| `.slideMenuBorderColor` | `.primary` |
+| `.slideMenuBorderWidth` | `1` |
+| `.slideMenuAnimation` | `.spring(response: 0.35, dampingFraction: 0.85)` |

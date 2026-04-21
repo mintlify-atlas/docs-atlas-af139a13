@@ -1,0 +1,56 @@
+---
+title: "SlideMenu: SwiftUI side menu with zero dependencies"
+description: "SlideMenu is a gesture-driven side menu library for SwiftUI. Zero dependencies, Swift 6.0+, iOS 15+, fully customizable via environment modifiers."
+---
+
+SlideMenu is a SwiftUI library that adds a native-feeling slide-out side menu to any iOS app. You wrap your root view in a single `SlideMenu` container, and the library handles edge-swipe gestures, tap-to-dismiss, and visual transitions — no bindings, no delegates, no third-party dependencies required.
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Gesture-driven" icon="hand-pointer">
+    Edge-swipe gesture with axis locking works seamlessly alongside `ScrollView`, `List`, and `Form` without conflicting with vertical scrolling.
+  </Card>
+  <Card title="Left and right" icon="arrows-left-right">
+    Slide the menu in from the leading or trailing edge of the screen. Configure the direction with a single `direction` parameter.
+  </Card>
+  <Card title="Environment-based API" icon="leaf">
+    All appearance settings flow through the SwiftUI environment. Apply modifiers at any level of your hierarchy — no callback chains or binding pyramids.
+  </Card>
+  <Card title="Zero dependencies" icon="circle-check">
+    Pure SwiftUI. No Objective-C bridging, no UIKit subclassing, and no third-party packages to manage or audit.
+  </Card>
+  <Card title="Configurable edge zone" icon="arrows-left-right">
+    Control how wide the invisible edge zone is so swipe recognition works reliably even when your content has horizontal controls.
+  </Card>
+  <Card title="Tap-to-dismiss overlay" icon="xmark">
+    A customizable dimming overlay appears over the main content while the menu is open and dismisses the menu on tap.
+  </Card>
+</CardGroup>
+
+## How it works
+
+SlideMenu wraps your main content and your menu content in a single container view. When the user swipes from the screen edge — or taps a `SlideMenuButton` — the main surface slides aside to reveal the menu panel behind it.
+
+The toggle action is injected into the SwiftUI environment automatically. Any `SlideMenuButton` you place inside your main content reads that action from the environment, so you never pass a binding or closure manually. The same `\.slideMenuToggle` environment key is available inside the menu content too, which lets menu items close the drawer after navigating.
+
+All visual properties — width, background material, overlay opacity, border, and animation — are set through view modifiers applied to the `SlideMenu` or any ancestor view.
+
+## Requirements
+
+| | Minimum version |
+|---|---|
+| Swift | 6.0+ |
+| iOS | 15+ |
+| Xcode | 16+ |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="swift" href="/installation">
+    Add SlideMenu to your Xcode project via Swift Package Manager in under a minute.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Build your first slide menu in a few lines of SwiftUI code.
+  </Card>
+</CardGroup>

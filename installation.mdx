@@ -1,0 +1,92 @@
+---
+title: "Add SlideMenu to your project with Swift Package Manager"
+description: "Add SlideMenu to any Xcode project or Swift package using Swift Package Manager. No dependencies to resolve. Requires Swift 6.0+, iOS 15+, and Xcode 16+."
+---
+
+SlideMenu is distributed as a Swift package and has no external dependencies, so installation is a single step in Xcode or a one-line addition to your `Package.swift` manifest.
+
+## Requirements
+
+Before you install, confirm your environment meets these minimums:
+
+- **Swift** 6.0 or later
+- **iOS** 15 or later (deployment target)
+- **Xcode** 16 or later
+
+## Install in an Xcode project
+
+<Steps>
+  <Step title="Open the package manager">
+    In Xcode, go to **File → Add Package Dependencies**.
+  </Step>
+  <Step title="Enter the repository URL">
+    Paste the following URL into the search field and press **Return**:
+
+    ```
+    https://github.com/matteozappia/SlideMenu.git
+    ```
+  </Step>
+  <Step title="Select the branch">
+    Under **Dependency Rule**, choose **Branch** and enter `main`. Then click **Add Package**.
+  </Step>
+  <Step title="Add to your target">
+    When prompted, select the **SlideMenu** library and choose the app target you want to add it to. Click **Add Package** to finish.
+  </Step>
+  <Step title="Import the library">
+    Add the import at the top of any Swift file where you use SlideMenu:
+
+    ```swift
+    import SlideMenu
+    ```
+  </Step>
+</Steps>
+
+## Install in a Swift package
+
+If you are building a library or app using a `Package.swift` manifest, add SlideMenu as a dependency and include it in the relevant target.
+
+<Steps>
+  <Step title="Add the package dependency">
+    Add SlideMenu to your `dependencies` array in `Package.swift`:
+
+    ```swift
+    dependencies: [
+        .package(url: "https://github.com/matteozappia/SlideMenu.git", branch: "main")
+    ]
+    ```
+  </Step>
+  <Step title="Add to your target">
+    Reference `"SlideMenu"` in the `dependencies` array of the target that needs it:
+
+    ```swift
+    .target(
+        name: "MyApp",
+        dependencies: ["SlideMenu"]
+    )
+    ```
+  </Step>
+  <Step title="Import the library">
+    Add the import at the top of any Swift file where you use SlideMenu:
+
+    ```swift
+    import SlideMenu
+    ```
+  </Step>
+</Steps>
+
+<Note>
+  SlideMenu has no transitive dependencies. Adding it to your project will not pull in any other packages.
+</Note>
+
+## Next steps
+
+With SlideMenu installed, head to the quickstart to build your first side menu.
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Build a working slide menu in a few lines of SwiftUI code.
+  </Card>
+  <Card title="Introduction" icon="book-open" href="/introduction">
+    Learn how SlideMenu works and explore its key features.
+  </Card>
+</CardGroup>

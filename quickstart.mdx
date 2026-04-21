@@ -1,80 +1,130 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: "Quickstart: build your first SlideMenu in SwiftUI app"
+description: "Build a working gesture-driven side menu in SwiftUI in minutes. Covers minimal setup, SlideMenuButton, direction parameter, and applying appearance modifiers."
 ---
 
-## Get started in three steps
+SlideMenu gets you a fully gesture-driven side menu with a few lines of SwiftUI. This guide walks you from a bare installation to a complete, customized side menu — including a toolbar toggle button, direction configuration, and appearance modifiers.
 
-Get your documentation site running locally and make your first customization.
+## Minimal working example
 
-### Step 1: Set up your local environment
+The simplest `SlideMenu` takes two trailing closures: `main` for your primary content and `menu` for the side panel.
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+```swift
+import SlideMenu
+import SwiftUI
 
-### Step 2: Deploy your changes
+SlideMenu {
+    Text("Main Content")
+} menu: {
+    VStack {
+        Text("Home")
+        Text("Settings")
+    }
+}
+```
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+This gives you a left-edge swipe gesture that reveals the menu. Swipe from the left edge or tap the dimmed overlay to close it.
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+## Adding a toggle button
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+Place a `SlideMenuButton` anywhere inside the `main` content. It reads the toggle action from the environment automatically — no bindings or callbacks required.
 
-### Step 3: Go live
+```swift
+SlideMenu {
+    NavigationStack {
+        Text("Hello")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    SlideMenuButton(systemImage: "sidebar.leading")
+                }
+            }
+    }
+} menu: {
+    Text("Menu")
+}
+```
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+<Note>
+`SlideMenuButton` works because `SlideMenu` injects a `slideMenuToggle` closure into the SwiftUI environment of both content trees. Any descendant view can read `@Environment(\.slideMenuToggle)` directly.
+</Note>
+
+## Custom button label
+
+You can use any view as the button label:
+
+```swift
+SlideMenuButton {
+    Label("Menu", systemImage: "line.3.horizontal")
+}
+```
+
+## Choosing the direction
+
+Use the `direction` parameter to slide from the trailing edge instead:
+
+```swift
+SlideMenu(direction: .right) {
+    Text("Main")
+} menu: {
+    Text("Right Side Menu")
+}
+```
+
+## Configuring the edge zone
+
+The `edgeZoneWidth` parameter controls how far from the screen edge a swipe must begin in order to open the menu. The default is `30` points.
+
+```swift
+SlideMenu(edgeZoneWidth: 50) {
+    // ...
+} menu: {
+    // ...
+}
+```
+
+Increase this value if users have trouble triggering the swipe. Decrease it to reduce conflicts with horizontal controls near the edge.
+
+## Full example with customization
+
+Here's a complete example combining all parameters and appearance modifiers:
+
+```swift
+SlideMenu(direction: .left, edgeZoneWidth: 40) {
+    NavigationStack {
+        ContentView()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    SlideMenuButton(systemImage: "sidebar.leading")
+                }
+            }
+    }
+} menu: {
+    MenuView()
+}
+.slideMenuWidth(300)
+.slideMenuBackground(.ultraThinMaterial)
+.slideMenuOverlayOpacity(0.5)
+.slideMenuBorderWidth(0)
+.slideMenuAnimation(.bouncy(duration: 0.5, extraBounce: 0.15))
+```
+
+<Tip>
+All view modifiers (`slideMenuWidth`, `slideMenuBackground`, etc.) are passed through the SwiftUI environment, so you can apply them to any ancestor view — not just `SlideMenu` itself.
+</Tip>
 
 ## Next steps
 
-Now that you have your docs running, explore these key features:
-
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="Customization guide" icon="paintbrush" href="/guides/customization">
+    Full reference for all appearance modifiers and their default values.
+  </Card>
+  <Card title="Menu-driven navigation" icon="list-ul" href="/guides/navigation">
+    Switch views in the main content area from menu buttons.
+  </Card>
+  <Card title="SlideMenu API" icon="code" href="/api/slide-menu">
+    Complete parameter reference for the SlideMenu component.
+  </Card>
+  <Card title="View modifiers" icon="wand-magic-sparkles" href="/api/modifiers">
+    All available view modifiers with types and defaults.
+  </Card>
 </CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>

@@ -1,0 +1,113 @@
+---
+title: "Basic SlideMenu usage: setup, direction, and button"
+description: "Learn how to initialize SlideMenu, configure direction and edge zone width, and add a SlideMenuButton to your toolbar or any descendant view."
+---
+
+`SlideMenu` wraps your existing content in a container that reveals a side panel when the user swipes from the screen edge or taps a toggle button. You pass two view builders — one for the main content and one for the menu panel — and the library handles the gesture recognition, animation, and overlay automatically.
+
+## Initialization patterns
+
+There are two ways to initialize `SlideMenu`. The basic form takes only the two required view builders. The extended form lets you pass `direction` and `edgeZoneWidth` parameters alongside the content.
+
+### Basic
+
+The simplest setup passes only a `main` and a `menu` closure. The menu slides in from the left by default.
+
+```swift
+SlideMenu {
+    Text("Main Content")
+} menu: {
+    VStack {
+        Text("Home")
+        Text("Settings")
+    }
+}
+```
+
+### With a toggle button
+
+Place a `SlideMenuButton` anywhere inside the `main` content. It reads the toggle action from the environment automatically — no bindings or callbacks are required.
+
+```swift
+SlideMenu {
+    NavigationStack {
+        Text("Hello")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    SlideMenuButton(systemImage: "sidebar.leading")
+                }
+            }
+    }
+} menu: {
+    Text("Menu")
+}
+```
+
+## Direction
+
+Pass `.left` (default) or `.right` to control which edge the menu slides from.
+
+<Tabs>
+  <Tab title="Left (default)">
+    ```swift
+    SlideMenu(direction: .left) {
+        Text("Main")
+    } menu: {
+        Text("Left Side Menu")
+    }
+    ```
+  </Tab>
+  <Tab title="Right">
+    ```swift
+    SlideMenu(direction: .right) {
+        Text("Main")
+    } menu: {
+        Text("Right Side Menu")
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Edge zone width
+
+The `edgeZoneWidth` parameter defines the invisible touch zone along the screen edge that recognizes a swipe-to-open gesture, measured in points. It defaults to `30`.
+
+```swift
+SlideMenu(edgeZoneWidth: 50) {
+    // ...
+} menu: {
+    // ...
+}
+```
+
+Increase this value if users have difficulty triggering the gesture. Decrease it to reduce conflicts with horizontal controls (like sliders or scroll views) positioned near the edge of the screen.
+
+<Note>
+`edgeZoneWidth` only affects swipe-to-open detection. Swipe-to-close works from anywhere on the main content, so reducing this value does not affect close gestures.
+</Note>
+
+## SlideMenuButton
+
+`SlideMenuButton` is a drop-in button that calls the menu toggle without any binding. It works anywhere inside the `main` content of `SlideMenu`.
+
+### System image variant
+
+Pass an SF Symbol name to `systemImage:` for a lightweight icon button.
+
+```swift
+SlideMenuButton(systemImage: "sidebar.leading")
+```
+
+### Custom label variant
+
+Use the trailing closure form to provide any view as the button label.
+
+```swift
+SlideMenuButton {
+    Label("Menu", systemImage: "line.3.horizontal")
+}
+```
+
+<Tip>
+`SlideMenuButton` has no visible styling of its own — it renders whatever view you pass as its label. Apply modifiers directly to the label view to match your design system.
+</Tip>

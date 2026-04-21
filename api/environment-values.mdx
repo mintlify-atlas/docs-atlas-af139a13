@@ -1,0 +1,112 @@
+---
+title: "SlideMenu environment values and the slideMenuToggle key"
+description: "Reference for EnvironmentValues extensions in SlideMenu, covering appearance configuration keys and the slideMenuToggle action injected into content closures."
+---
+
+SlideMenu communicates its configuration and toggle action entirely through the SwiftUI environment. All appearance settings are stored as environment values that the modifier API writes — and `SlideMenu` reads — at runtime. One additional value, `slideMenuToggle`, is injected by `SlideMenu` itself so that any descendant view can open or close the menu without a binding.
+
+<Note>
+  The view modifier API (e.g. `.slideMenuWidth()`, `.slideMenuBackground()`) is the preferred way to configure `SlideMenu`. Direct environment access via `@Environment` is mainly useful for reading `slideMenuToggle` from within the menu or main content.
+</Note>
+
+## Configuration values
+
+These values are written by the corresponding view modifiers and read by `SlideMenu` internally. You can also read them directly with `@Environment` if your own views need to inspect the current configuration.
+
+<ResponseField name="slideMenuWidth" type="CGFloat" default="290">
+  The width of the menu panel in points.
+
+  Set via `.slideMenuWidth(_:)` or directly through the environment.
+
+  ```swift
+  @Environment(\.slideMenuWidth) private var menuWidth
+  ```
+</ResponseField>
+
+<ResponseField name="slideMenuBackground" type="AnyShapeStyle" default="AnyShapeStyle(.background)">
+  The background style applied to both the menu and the main content panels.
+
+  Accepts any `ShapeStyle` wrapped in `AnyShapeStyle`. Set via `.slideMenuBackground(_:)`, which handles the wrapping automatically.
+
+  ```swift
+  @Environment(\.slideMenuBackground) private var background
+  ```
+</ResponseField>
+
+<ResponseField name="slideMenuOverlayColor" type="Color?" default="nil">
+  An optional color for the dimming overlay drawn on top of the main content while the menu is open.
+
+  When `nil` (the default), the overlay color resolves automatically based on the current `colorScheme` — black in dark mode, white in light mode. Set a non-`nil` value via `.slideMenuOverlayColor(_:)` to force a specific color.
+
+  ```swift
+  @Environment(\.slideMenuOverlayColor) private var overlayColor
+  ```
+</ResponseField>
+
+<ResponseField name="slideMenuOverlayOpacity" type="CGFloat" default="0.6">
+  The maximum opacity the dimming overlay reaches when the menu is fully open.
+
+  Ranges from `0` (fully transparent) to `1` (fully opaque). Set via `.slideMenuOverlayOpacity(_:)`.
+
+  ```swift
+  @Environment(\.slideMenuOverlayOpacity) private var overlayOpacity
+  ```
+</ResponseField>
+
+<ResponseField name="slideMenuBorderColor" type="Color" default=".primary">
+  The color of the border stroke drawn around the main content while the menu is open or being dragged.
+
+  Set via `.slideMenuBorderColor(_:)`.
+
+  ```swift
+  @Environment(\.slideMenuBorderColor) private var borderColor
+  ```
+</ResponseField>
+
+<ResponseField name="slideMenuBorderWidth" type="CGFloat" default="1">
+  The line width of the border stroke drawn around the main content while the menu is visible.
+
+  Set via `.slideMenuBorderWidth(_:)`. Use `0` to remove the border entirely.
+
+  ```swift
+  @Environment(\.slideMenuBorderWidth) private var borderWidth
+  ```
+</ResponseField>
+
+<ResponseField name="slideMenuAnimation" type="Animation" default=".spring(response: 0.35, dampingFraction: 0.85)">
+  The animation used when the menu opens or closes.
+
+  Set via `.slideMenuAnimation(_:)`.
+
+  ```swift
+  @Environment(\.slideMenuAnimation) private var animation
+  ```
+</ResponseField>
+
+## Toggle action
+
+<ResponseField name="slideMenuToggle" type="@MainActor @Sendable () -> Void" default="{}">
+  A closure that toggles the menu open or closed.
+
+  `SlideMenu` injects this closure automatically into its `main` content and `menu` content. Any descendant view can read it with `@Environment` and call it directly — no binding or shared state is required. `SlideMenuButton` uses this internally.
+
+  The default value is a no-op closure (`{}`). The active toggle is only available inside a view hierarchy that is a descendant of a `SlideMenu`.
+</ResponseField>
+
+### Reading `slideMenuToggle`
+
+Read `slideMenuToggle` from the environment to call the toggle action from any view inside `SlideMenu`:
+
+```swift
+struct MenuList: View {
+    @Environment(\.slideMenuToggle) private var toggle
+
+    var body: some View {
+        Button("Close Menu") {
+            toggle()
+        }
+    }
+}
+```
+
+The toggle action is available in both the `main` and `menu` content closures of `SlideMenu`, so you can dismiss the menu from a button inside the menu itself.
